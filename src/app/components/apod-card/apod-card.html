@@ -1,0 +1,42 @@
+<div class="card-container">
+  <div class="filter-section">
+    <div class="input-group">
+      <label for="date-picker">Explorar data:</label>
+      <input type="date" id="date-picker" [max]="maxDate" (input)="onDateSelect($event)" />
+    </div>
+
+    <button
+      class="search-button"
+      (click)="searchByDate()"
+      [disabled]="!selectedDate() || nasaService.loading()"
+    >
+      {{ nasaService.loading() ? 'Buscando...' : 'Pesquisar' }}
+    </button>
+  </div>
+
+  @if (nasaService.loading()) {
+    <div class="loader">
+      <p>Consultando banco de dados da NASA...</p>
+    </div>
+  } @else if (nasaService.apod(); as data) {
+    <div class="apod-content">
+      @if (data.media_type === 'image') {
+        <img [src]="data.url" [alt]="data.title" class="nasa-image" />
+      } @else if (data.media_type === 'video') {
+        <div class="video-container">
+          <iframe [src]="data.url" frameborder="0" allowfullscreen></iframe>
+        </div>
+      }
+
+      <div class="info">
+        <h3>{{ data.title }}</h3>
+        <p class="date">{{ data.date | date: 'dd/MM/yyyy' }}</p>
+        <p class="description">{{ data.explanation }}</p>
+      </div>
+    </div>
+  } @else {
+    <div class="error">
+      <p>Nenhuma informação encontrada para esta data.</p>
+    </div>
+  }
+</div>
